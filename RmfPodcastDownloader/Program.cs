@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -11,17 +12,20 @@ namespace RmfPodcastDownloader
     {
         static async Task Main(string[] args)
         {
+            _urls.Add("https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml");
+            _urls.Add("https://www.rmf.fm/rss/podcast/dorwac-bestie.xml");
+            _urls.Add("https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml");
+            foreach (var url in _urls)
+                await DownloadPodcast(url);
+        }
 
-            //_rssUrl = "https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml";
-            //_rssUrl = "https://www.rmf.fm/rss/podcast/dorwac-bestie.xml";
-            _rssUrl = "https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml";
-
+        private static async Task DownloadPodcast(string rssUrl)
+        {
             try
             {
-                string responseBody = await _client.GetStringAsync(_rssUrl);
+                string responseBody = await _client.GetStringAsync(rssUrl);
                 XmlSerializer serializer = new XmlSerializer(typeof(rss));
                 rss podcasts;
-
 
                 using (StringReader stringReader = new StringReader(responseBody))
                 {
@@ -68,7 +72,7 @@ namespace RmfPodcastDownloader
         }
 
         static readonly HttpClient _client = new HttpClient();
-        static string _rssUrl = "";
         static string _baseDir = @"D:\Rmf";
+        static List<string> _urls = new List<string>();
     }
 }
