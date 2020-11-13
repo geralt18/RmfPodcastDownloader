@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -60,6 +62,12 @@ namespace RmfPodcastDownloader
          }
       }
 
+      /// <summary>
+      /// Saves and resizes podcast cover
+      /// </summary>
+      /// <param name="path">File where to save cover</param>
+      /// <param name="imageUrl">Url where covers is located</param>
+      /// <returns></returns>
       private static async Task<string> SaveCover(string path, string imageUrl) {
          string filePath = Path.Combine(path, Path.GetFileName(imageUrl));
          using (HttpResponseMessage response = await _client.GetAsync(imageUrl, HttpCompletionOption.ResponseHeadersRead))
@@ -68,6 +76,16 @@ namespace RmfPodcastDownloader
                await streamToReadFrom.CopyToAsync(streamToWriteTo);
             }
          }
+
+         using (Image image = Image.Load(filePath)) {
+            if (image.Width > 1000) {
+               image.Mutate(x => x
+                    .Resize(1000, 0)
+                    );
+               image.Save(filePath); 
+            }
+         }
+
          return filePath;
       }
 
@@ -79,9 +97,13 @@ namespace RmfPodcastDownloader
          tag.Tag.Year = year;
          tag.Tag.Track = 1;
          //tag.Tag.TrackCount = 12;
-         var pictures = new TagLib.Picture[1];
-         pictures[0] = new TagLib.Picture(coverPath);
-         tag.Tag.Pictures = pictures;
+
+         if (File.Exists(coverPath)) {
+            var pictures = new TagLib.Picture[1];
+            pictures[0] = new TagLib.Picture(coverPath);
+            tag.Tag.Pictures = pictures;
+         }
+
          tag.Save();
       }
 
