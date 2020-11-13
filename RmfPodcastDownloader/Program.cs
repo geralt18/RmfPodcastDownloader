@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using NLog;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace RmfPodcastDownloader
                if (File.Exists(filePath))
                   continue;
 
-               Console.WriteLine("Downloading [{0}] #{1} - {2}", podcasts.channel.title, count, fileName);
+               _logger.Debug("[{0}] Downloading #{1} - {2}", podcasts.channel.title, count, fileName);
                using (HttpResponseMessage response = await _client.GetAsync(p.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
                using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
                   using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
@@ -62,10 +63,11 @@ namespace RmfPodcastDownloader
                }
                SetTags(filePath, fileName, podcasts.channel.title, "RMF FM", (uint)podcastDate.Year, coverFile);
             }
-            Console.WriteLine("Download finished [{0}]. Podcasts downloaded: {1}", podcasts.channel.title, count);
-         } catch (HttpRequestException e) {
-            Console.WriteLine("\nException Caught!");
-            Console.WriteLine("Message :{0} ", e.Message);
+            _logger.Info("[{0}] Download finished. Podcasts downloaded: {1}", podcasts.channel.title, count);
+         } catch (HttpRequestException e1) {
+            _logger.Error(e1, "Http Request Exception");
+         } catch (Exception e2) {
+            _logger.Error(e2, "General Exception");
          }
       }
 
@@ -124,5 +126,6 @@ namespace RmfPodcastDownloader
       static readonly HttpClient _client = new HttpClient();
       static string _baseDir = @"D:\Rmf";
       static List<string> _urls = new List<string>();
+      private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
    }
 }
