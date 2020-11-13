@@ -18,8 +18,13 @@ namespace RmfPodcastDownloader
          _urls.Add("https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/dorwac-bestie.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml");
-         foreach (var url in _urls)
-            await DownloadPodcast(url);
+
+         Task[] tasks = new Task[_urls.Count];
+         for (int i = 0; i < _urls.Count; i++) {
+            int index = i;
+            tasks[index] = Task.Run(() => DownloadPodcast(_urls[index]));
+         }
+         Task.WaitAll(tasks);
       }
 
       private static async Task DownloadPodcast(string rssUrl) {
@@ -39,14 +44,16 @@ namespace RmfPodcastDownloader
 
             string coverFile = SaveCover(path, podcasts.channel.image1.href).Result;
 
+            int count = 0;
             foreach (var p in podcasts.channel.item) {
+               count++;
                DateTime podcastDate = DateTime.Parse(p.pubDate);
                string fileName = CleanFilePath($"{podcastDate:yyyy-MM-dd} - {p.title}.mp3");
                string filePath = Path.Combine(path, fileName);
                if (File.Exists(filePath))
                   continue;
 
-               Console.WriteLine("Pobieram {0}", fileName);
+               Console.WriteLine("Downloading [{0}] #{1} - {2}", podcasts.channel.title, count, fileName);
                using (HttpResponseMessage response = await _client.GetAsync(p.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
                using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
                   using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
@@ -55,7 +62,7 @@ namespace RmfPodcastDownloader
                }
                SetTags(filePath, fileName, podcasts.channel.title, "RMF FM", (uint)podcastDate.Year, coverFile);
             }
-
+            Console.WriteLine("Download finished [{0}]. Podcasts downloaded: {1}", podcasts.channel.title, count);
          } catch (HttpRequestException e) {
             Console.WriteLine("\nException Caught!");
             Console.WriteLine("Message :{0} ", e.Message);
@@ -90,21 +97,22 @@ namespace RmfPodcastDownloader
       }
 
       private static void SetTags(string filePath, string title, string album, string artist, uint year, string coverPath) {
-         var tag = TagLib.File.Create(filePath);
-         tag.Tag.Title = title;
-         tag.Tag.Album = album;
-         tag.Tag.Artists = new string[] { artist };
-         tag.Tag.Year = year;
-         tag.Tag.Track = 1;
-         //tag.Tag.TrackCount = 12;
+         using (var tag = TagLib.File.Create(filePath)) {
+            tag.Tag.Title = title;
+            tag.Tag.Album = album;
+            tag.Tag.Artists = new string[] { artist };
+            tag.Tag.Year = year;
+            tag.Tag.Track = 1;
+            //tag.Tag.TrackCount = 12;
 
-         if (File.Exists(coverPath)) {
-            var pictures = new TagLib.Picture[1];
-            pictures[0] = new TagLib.Picture(coverPath);
-            tag.Tag.Pictures = pictures;
+            if (File.Exists(coverPath)) {
+               var pictures = new TagLib.Picture[1];
+               pictures[0] = new TagLib.Picture(coverPath);
+               tag.Tag.Pictures = pictures;
+            }
+
+            tag.Save();
          }
-
-         tag.Save();
       }
 
       private static string CleanFilePath(string input) {
