@@ -124,7 +124,7 @@ namespace RmfPodcastDownloader
       }
 
       static readonly HttpClient _client = new HttpClient();
-      static string _baseDir = @"D:\Rmf";
+      static string _baseDir = @"D:\Temp\Rmf";
       static List<string> _urls = new List<string>();
       private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
    }
