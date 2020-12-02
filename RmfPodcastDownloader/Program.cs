@@ -19,6 +19,11 @@ namespace RmfPodcastDownloader
          _urls.Add("https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/dorwac-bestie.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml");
+         _urls.Add("https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml");
+         _urls.Add("https://www.rmf.fm/rss/podcast/misja-specjalna.xml");
+         _urls.Add("https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml");
+         _urls.Add("https://www.rmf.fm/rss/podcast/kryminatorium.xml");
+         _urls.Add("https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml");
 
          Task[] tasks = new Task[_urls.Count];
          for (int i = 0; i < _urls.Count; i++) {
@@ -78,24 +83,27 @@ namespace RmfPodcastDownloader
       /// <param name="imageUrl">Url where covers is located</param>
       /// <returns></returns>
       private static async Task<string> SaveCover(string path, string imageUrl) {
-         string filePath = Path.Combine(path, Path.GetFileName(imageUrl));
+         string fileName = CleanFileName(Path.GetFileNameWithoutExtension(imageUrl.Split(new[] { '?' })[0]))+ ".jpg";
+         string filePath = Path.Combine(path, fileName);
          using (HttpResponseMessage response = await _client.GetAsync(imageUrl, HttpCompletionOption.ResponseHeadersRead))
-         using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
-            using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
-               await streamToReadFrom.CopyToAsync(streamToWriteTo);
+            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
+                using (Image image = Image.Load(streamToReadFrom)) {
+                    if (image.Width > 1000)
+                    {
+                        image.Mutate(x => x
+                             .Resize(1000, 0)
+                             );
+                        image.Save(filePath);
+                    }
+                }
             }
-         }
-
-         using (Image image = Image.Load(filePath)) {
-            if (image.Width > 1000) {
-               image.Mutate(x => x
-                    .Resize(1000, 0)
-                    );
-               image.Save(filePath); 
-            }
-         }
-
          return filePath;
+      }
+
+      static string CleanFileName(string name) {
+         foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            name = name.Replace(c.ToString(), "");
+         return name;
       }
 
       private static void SetTags(string filePath, string title, string album, string artist, uint year, string coverPath) {
