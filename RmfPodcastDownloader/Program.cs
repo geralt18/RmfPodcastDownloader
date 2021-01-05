@@ -1,9 +1,11 @@
-﻿using NLog;
+﻿using MediaDevices;
+using NLog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -31,6 +33,39 @@ namespace RmfPodcastDownloader
             tasks[index] = Task.Run(() => DownloadPodcast(_urls[index]));
          }
          Task.WaitAll(tasks);
+
+         SyncFiles();
+      }
+
+      private static void SyncFiles() {
+         var devices = MediaDevice.GetDevices();
+         using (var device = devices.First(d => d.FriendlyName.Contains(_deviceName))) {
+            try {
+               device.Connect();
+
+               var dirs = Directory.GetDirectories(_baseDir);
+               foreach (var dir in dirs) {
+                  _logger.Debug("Syncing directory {0}", dir);
+                  var files = Directory.GetFiles(dir, "*.mp3");
+                  foreach (var file in files) {
+                     var deviceDirPath = dir.Replace(_baseDir, _deviceBaseDir);
+                     var deviceFilePath = file.Replace(_baseDir, _deviceBaseDir);
+                     
+                     if (!device.DirectoryExists(deviceDirPath))
+                        device.CreateDirectory(deviceDirPath);
+
+                     if (!device.FileExists(deviceFilePath)) {
+                        _logger.Info("Copying file {0}", file);
+                        device.UploadFile(file, deviceFilePath);
+                     }
+                  }
+               }
+            } catch (Exception ex) {
+               _logger.Error(ex, "Exepcion during syncing files with device");
+            } finally {
+               device.Disconnect();
+            }
+         }
       }
 
       private static async Task DownloadPodcast(string rssUrl) {
@@ -133,6 +168,8 @@ namespace RmfPodcastDownloader
 
       static readonly HttpClient _client = new HttpClient();
       static string _baseDir = @"D:\Temp\Rmf";
+      static string _deviceName = "DarkGalaxy";
+      static string _deviceBaseDir = @"\Phone\Audiobooks";
       static List<string> _urls = new List<string>();
       private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
    }
