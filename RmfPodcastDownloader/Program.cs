@@ -39,7 +39,11 @@ namespace RmfPodcastDownloader
 
       private static void SyncFiles() {
          var devices = MediaDevice.GetDevices();
-         using (var device = devices.First(d => d.FriendlyName.Contains(_deviceName))) {
+         var device = devices.FirstOrDefault(d => d.FriendlyName.Contains(_deviceName));
+         if (device == null)
+            return;
+
+         using (device) {
             try {
                device.Connect();
 
