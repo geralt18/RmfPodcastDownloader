@@ -94,13 +94,20 @@ namespace RmfPodcastDownloader
                if (File.Exists(filePath))
                   continue;
 
-               _logger.Debug("[{0}] Downloading #{1} - {2}", podcasts.channel.title, count, fileName);
-               using (HttpResponseMessage response = await _client.GetAsync(p.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
-               using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
-                  using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
-                     await streamToReadFrom.CopyToAsync(streamToWriteTo);
+               try {
+                  _logger.Debug("[{0}] Downloading #{1} - {2}", podcasts.channel.title, count, fileName);
+                  using (HttpResponseMessage response = await _client.GetAsync(p.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
+                  using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
+                     using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
+                        await streamToReadFrom.CopyToAsync(streamToWriteTo);
+                     }
                   }
                }
+               catch (Exception ex) {
+                  _logger.Error(ex, "Exception downloading podcast");
+                  File.Delete(filePath);
+               }
+               
                SetTags(filePath, fileName, podcasts.channel.title, "RMF FM", (uint)podcastDate.Year, coverFile);
             }
             _logger.Info("[{0}] Download finished. Podcasts downloaded: {1}", podcasts.channel.title, count);
