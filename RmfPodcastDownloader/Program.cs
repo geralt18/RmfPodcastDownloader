@@ -55,6 +55,10 @@ namespace RmfPodcastDownloader
                   _logger.Debug("Syncing directory {0}", dir);
                   var files = Directory.GetFiles(dir, "*.mp3");
                   foreach (var file in files) {
+                     var fi = new FileInfo(file);
+                     if (fi.Length == 0)
+                        return;
+
                      var deviceDirPath = dir.Replace(_baseDir, _deviceBaseDir);
                      var deviceFilePath = file.Replace(_baseDir, _deviceBaseDir);
                      
@@ -156,6 +160,10 @@ namespace RmfPodcastDownloader
       }
 
       private static void SetTags(string filePath, string title, string album, string artist, uint year, string coverPath) {
+         var fi = new FileInfo(filePath);
+         if (fi.Length == 0)
+            return;
+
          using (var tag = TagLib.File.Create(filePath)) {
             tag.Tag.Title = title;
             tag.Tag.Album = album;
