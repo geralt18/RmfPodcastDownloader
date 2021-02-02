@@ -93,16 +93,18 @@ namespace RmfPodcastDownloader
             string coverFile = SaveCover(path, podcasts.channel.image1.href).Result;
 
             int count = 0;
-            foreach (var p in podcasts.channel.item) {
+            int errorCount = 0;
+            for (int i = 0; i < podcasts.channel.item.Length; i++) {
+               rssChannelItem p = podcasts.channel.item[i];
                count++;
                DateTime podcastDate = DateTime.Parse(p.pubDate);
-               string fileName = CleanFilePath($"{podcastDate:yyyy-MM-dd} - {p.title}.mp3");
+               string fileName = CleanFilePath($"{podcastDate:yyyy-MM-dd} - {p.title?.Trim()}.mp3");
                string filePath = Path.Combine(path, fileName);
                if (File.Exists(filePath))
                   continue;
 
                try {
-                  _logger.Debug("[{0}] Downloading #{1} - {2}", podcasts.channel.title, count, fileName);
+                  _logger.Debug("[{0}] Downloading #{1} - {2}{3}", podcasts.channel.title, count, fileName, errorCount > 0 ? errorCount.ToString("' [error='##']'") : "" );
                   using (HttpResponseMessage response = await _client.GetAsync(p.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
                   using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
                      using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
@@ -114,8 +116,19 @@ namespace RmfPodcastDownloader
                   _logger.Error(ex, "Exception downloading podcast");
                   File.Delete(filePath);
                }
+
+               var fi = new FileInfo(filePath);
+               if (fi.Length == 0) {
+                  File.Delete(filePath);
+                  errorCount++;
+                  i--;
+                  count--;
+                  Task.Delay(errorCount * 1000).Wait();
+                  continue;
+               }
                
                SetTags(filePath, fileName, podcasts.channel.title, "RMF FM", (uint)podcastDate.Year, coverFile);
+               errorCount = 0;
             }
             _logger.Info("[{0}] Download finished. Podcasts downloaded: {1}", podcasts.channel.title, count);
          } catch (HttpRequestException e1) {
