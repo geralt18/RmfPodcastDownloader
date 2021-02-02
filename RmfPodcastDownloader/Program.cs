@@ -114,7 +114,9 @@ namespace RmfPodcastDownloader
                }
                catch (Exception ex) {
                   _logger.Error(ex, "Exception downloading podcast");
-                  File.Delete(filePath);
+                  if (File.Exists(filePath))
+                     File.Delete(filePath);
+                  continue;
                }
 
                var fi = new FileInfo(filePath);
