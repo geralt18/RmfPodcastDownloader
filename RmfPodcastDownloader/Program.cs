@@ -24,10 +24,9 @@ namespace RmfPodcastDownloader
          _urls.Add("https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/misja-specjalna.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/kryminatorium.xml");
+         //_urls.Add("https://www.rmf.fm/rss/podcast/kryminatorium.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml");
          _urls.Add("https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml");
-         _urls.Add("https://www.rmfclassic.pl/podcasty/grupa/13/");
          _urls.Add("https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed");
 
          Task[] tasks = new Task[_urls.Count];
