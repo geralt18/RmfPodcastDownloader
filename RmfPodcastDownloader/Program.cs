@@ -18,21 +18,21 @@ namespace RmfPodcastDownloader
    class Program
    {
       static async Task Main(string[] args) {
-         _urls.Add("https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/dorwac-bestie.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/misja-specjalna.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml");
-         //_urls.Add("https://www.rmf.fm/rss/podcast/kryminatorium.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml");
-         _urls.Add("https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml");
-         _urls.Add("https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed");
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/dorwac-bestie.xml", true, false));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/misja-specjalna.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/kryminatorium.xml", false, false));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml", true, true));
+         _podcasts.Add(new Podcast("https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed", true, true));
 
-         Task[] tasks = new Task[_urls.Count];
-         for (int i = 0; i < _urls.Count; i++) {
+         Task[] tasks = new Task[_podcasts.Count];
+         for (int i = 0; i < _podcasts.Count; i++) {
             int index = i;
-            tasks[index] = Task.Run(() => DownloadPodcast(_urls[index]));
+            tasks[index] = Task.Run(() => DownloadPodcast(_podcasts[index]));
          }
          Task.WaitAll(tasks);
 
@@ -49,7 +49,8 @@ namespace RmfPodcastDownloader
             try {
                device.Connect();
 
-               var dirs = Directory.GetDirectories(_baseDir);
+               //var dirs = Directory.GetDirectories(_baseDir);
+               var dirs = _podcasts.Where(x => x.Sync).Select(x => x.Path);
                foreach (var dir in dirs) {
                   _logger.Debug("Syncing directory {0}", dir);
                   var files = Directory.GetFiles(dir, "*.mp3");
@@ -78,9 +79,12 @@ namespace RmfPodcastDownloader
          }
       }
 
-      private static async Task DownloadPodcast(string rssUrl) {
+      private static async Task DownloadPodcast(Podcast podcast) {
          try {
-            string responseBody = await _client.GetStringAsync(rssUrl);
+            if (!podcast.Download)
+               return;
+
+            string responseBody = await _client.GetStringAsync(podcast.Url);
             XmlSerializer serializer = new XmlSerializer(typeof(rss));
             rss podcasts;
 
@@ -92,6 +96,9 @@ namespace RmfPodcastDownloader
             string path = Path.Combine(_baseDir, podcasts.channel.title);
             if (!Directory.Exists(path))
                Directory.CreateDirectory(path);
+
+            podcast.Name = podcasts.channel.title;
+            podcast.Path = path;
 
             string coverFile = SaveCover(path, podcasts.channel.image1.href).Result;
 
@@ -206,7 +213,23 @@ namespace RmfPodcastDownloader
       static string _baseDir = @"D:\Temp\Rmf";
       static string _deviceName = "DarkGalaxy";
       static string _deviceBaseDir = @"\Phone\Audiobooks";
-      static List<string> _urls = new List<string>();
+      static List<Podcast> _podcasts = new List<Podcast>();
       private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+      public class Podcast
+      {
+         public Podcast(string url, bool download, bool sync) {
+            Url = url;
+            Download = download;
+            Sync = sync;
+         }
+
+         public string Name { get; set; }
+         public string Url { get; set; }
+         public string Path { get; set; }
+         public bool Download { get; set; }
+         public bool Sync { get; set; }
+         
+      }
    }
 }
