@@ -4,6 +4,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -11,23 +12,24 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static RmfPodcastDownloader.Program;
 
 
-namespace RmfPodcastDownloader
-{
-   class Program
-   {
+namespace RmfPodcastDownloader {
+   class Program {
       static async Task Main(string[] args) {
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/dorwac-bestie.xml", true, false));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/misja-specjalna.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/kryminatorium.xml", false, false));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml", true, true));
-         _podcasts.Add(new Podcast("https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed", true, true));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml", true, true));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/dorwac-bestie.xml", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml", true, true));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/misja-specjalna.xml", true, true));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml", true, true));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/kryminatorium.xml", false, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Niebezpiecznik, "https://www.spreaker.com/show/2621972/episodes/feed", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.KCW, "https://podkasty.info/RSS/klcw.rss", true, false));
 
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
@@ -61,7 +63,7 @@ namespace RmfPodcastDownloader
 
                      var deviceDirPath = dir.Replace(_baseDir, _deviceBaseDir);
                      var deviceFilePath = file.Replace(_baseDir, _deviceBaseDir);
-                     
+
                      if (!device.DirectoryExists(deviceDirPath))
                         device.CreateDirectory(deviceDirPath);
 
@@ -80,13 +82,14 @@ namespace RmfPodcastDownloader
       }
 
       private static async Task DownloadPodcast(Podcast podcast) {
+         rss podcasts = null;
+         rssChannelItem podcastItem = null;
          try {
             if (!podcast.Download)
                return;
 
             string responseBody = await _client.GetStringAsync(podcast.Url);
             XmlSerializer serializer = new XmlSerializer(typeof(rss));
-            rss podcasts;
 
             using (StringReader stringReader = new StringReader(responseBody)) {
                // Call the Deserialize method to restore the object's state.
@@ -105,25 +108,24 @@ namespace RmfPodcastDownloader
             int count = 0;
             int errorCount = 0;
             for (int i = 0; i < podcasts.channel.item.Length; i++) {
-               rssChannelItem p = podcasts.channel.item[i];
+               podcastItem = podcasts.channel.item[i];
                count++;
-               DateTime podcastDate = DateTime.Parse(p.pubDate);
-               string fileName = CleanFilePath($"{podcastDate:yyyy-MM-dd} - {p.title?.Trim()}.mp3");
+               DateTime podcastDate = DateTime.Parse(podcastItem.pubDate);
+               string fileName = CleanFilePath($"{podcastDate:yyyy-MM-dd} - {podcastItem.title?.Trim()}.mp3");
                string filePath = Path.Combine(path, fileName);
                if (File.Exists(filePath))
                   continue;
 
                try {
-                  _logger.Debug("[{0}] Downloading #{1} - {2}{3}", podcasts.channel.title, count, fileName, errorCount > 0 ? errorCount.ToString("' [error='##']'") : "" );
-                  using (HttpResponseMessage response = await _client.GetAsync(p.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
+                  _logger.Debug("[{0}] Downloading #{1} - {2}{3}", podcasts.channel.title, count, fileName, errorCount > 0 ? errorCount.ToString("' [error='##']'") : "");
+                  using (HttpResponseMessage response = await _client.GetAsync(podcastItem.enclosure.url, HttpCompletionOption.ResponseHeadersRead))
                   using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
                      using (Stream streamToWriteTo = File.Open(filePath, FileMode.Create)) {
                         await streamToReadFrom.CopyToAsync(streamToWriteTo);
                      }
                   }
-               }
-               catch (Exception ex) {
-                  _logger.Error(ex, "Exception downloading podcast");
+               } catch (Exception ex) {
+                  _logger.Error(ex, "[{0}] Exception downloading podcast Url={1}, FilePath={2}", podcasts.channel.title, podcastItem.enclosure.url, filePath);
                   if (File.Exists(filePath))
                      File.Delete(filePath);
                   continue;
@@ -138,15 +140,21 @@ namespace RmfPodcastDownloader
                   Task.Delay(errorCount * 1000).Wait();
                   continue;
                }
-               
-               SetTags(filePath, fileName, podcasts.channel.title, "RMF FM", (uint)podcastDate.Year, coverFile);
+
+               try {
+                  SetTags(filePath, fileName, podcasts.channel.title, podcasts.channel.author, (uint)podcastDate.Year, coverFile);
+               } catch (Exception ex) {
+                  _logger.Error(ex, "[{0}] Exception setting mp3 tags Url={1}, FilePath={2}", podcasts.channel.title, podcastItem.enclosure.url, filePath);
+                  continue;
+               }
+
                errorCount = 0;
             }
             _logger.Info("[{0}] Download finished. Podcasts downloaded: {1}", podcasts.channel.title, count);
          } catch (HttpRequestException e1) {
-            _logger.Error(e1, "Http Request Exception");
+            _logger.Error(e1, "[{0}] Http Request Exception downloading Url={1}", podcasts?.channel?.title, podcastItem?.enclosure?.url);
          } catch (Exception e2) {
-            _logger.Error(e2, "General Exception");
+            _logger.Error(e2, "[{0}] General Exception downloading Url={1}", podcasts?.channel?.title, podcastItem?.enclosure?.url);
          }
       }
 
@@ -157,20 +165,19 @@ namespace RmfPodcastDownloader
       /// <param name="imageUrl">Url where covers is located</param>
       /// <returns></returns>
       private static async Task<string> SaveCover(string path, string imageUrl) {
-         string fileName = CleanFileName(Path.GetFileNameWithoutExtension(imageUrl.Split(new[] { '?' })[0]))+ ".jpg";
+         string fileName = CleanFileName(Path.GetFileNameWithoutExtension(imageUrl.Split(new[] { '?' })[0])) + ".jpg";
          string filePath = Path.Combine(path, fileName);
          using (HttpResponseMessage response = await _client.GetAsync(imageUrl, HttpCompletionOption.ResponseHeadersRead))
-            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
-                using (Image image = Image.Load(streamToReadFrom)) {
-                    if (image.Width > 1000)
-                    {
-                        image.Mutate(x => x
-                             .Resize(1000, 0)
-                             );
-                        image.Save(filePath);
-                    }
-                }
+         using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
+            using (Image image = Image.Load(streamToReadFrom)) {
+               if (image.Width > 1000) {
+                  image.Mutate(x => x
+                       .Resize(1000, 0)
+                       );
+                  image.Save(filePath);
+               }
             }
+         }
          return filePath;
       }
 
@@ -216,20 +223,27 @@ namespace RmfPodcastDownloader
       static List<Podcast> _podcasts = new List<Podcast>();
       private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-      public class Podcast
-      {
-         public Podcast(string url, bool download, bool sync) {
+      public class Podcast {
+         public Podcast(PodcastType type, string url, bool download, bool sync) {
+            Type = type;
             Url = url;
             Download = download;
             Sync = sync;
-         }
 
+         }
+         public enum PodcastType {
+            Unknown = 0,
+            Rmf = 1,
+            Niebezpiecznik = 2,
+            KCW = 3
+         }
+         public PodcastType Type { get; set; }
          public string Name { get; set; }
          public string Url { get; set; }
          public string Path { get; set; }
          public bool Download { get; set; }
          public bool Sync { get; set; }
-         
+
       }
    }
 }
