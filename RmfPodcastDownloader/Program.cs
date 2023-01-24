@@ -31,7 +31,10 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Niebezpiecznik, "https://www.spreaker.com/show/2621972/episodes/feed", true, false));
          _podcasts.Add(new Podcast(Podcast.PodcastType.KCW, "https://podkasty.info/RSS/klcw.rss", true, false));
          _podcasts.Add(new Podcast(Podcast.PodcastType.Panoptykon, "https://panoptykon.org/podcasty/rss.xml", true, false));
-
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/3318547/episodes/feed", true, false)); //Piąte nie zabijaj
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/6e6e1568/podcast/rss", true, false)); //Kryminalne historie
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/606807e4/podcast/rss", true, false)); //Olga Herring
+      
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
             int index = i;
@@ -97,7 +100,7 @@ namespace RmfPodcastDownloader {
                podcasts = (rss)serializer.Deserialize(stringReader);
             }
 
-            string path = Path.Combine(_baseDir, podcasts.channel.title);
+            string path = Path.Combine(_baseDir, CleanFileName(podcasts.channel.title));
             if (!Directory.Exists(path))
                Directory.CreateDirectory(path);
 
@@ -116,7 +119,7 @@ namespace RmfPodcastDownloader {
                podcastItem = podcasts.channel.item[i];
                count++;
                DateTime podcastDate = DateTime.Parse(podcastItem.pubDate);
-               string fileName = CleanFilePath($"{podcastDate:yyyy-MM-dd} - {podcastItem.title?.Trim()}.mp3");
+               string fileName = CleanFileName($"{podcastDate:yyyy-MM-dd} - {podcastItem.title?.Trim()}.mp3");
                string filePath = Path.Combine(path, fileName);
                if (File.Exists(filePath))
                   continue;
@@ -213,12 +216,6 @@ namespace RmfPodcastDownloader {
 
             tag.Save();
          }
-      }
-
-      private static string CleanFilePath(string input) {
-         string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-         Regex r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
-         return r.Replace(input, "");
       }
 
       static readonly HttpClient _client = new HttpClient();
