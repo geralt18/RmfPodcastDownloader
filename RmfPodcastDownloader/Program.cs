@@ -30,6 +30,7 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed", true, false));
          _podcasts.Add(new Podcast(Podcast.PodcastType.Niebezpiecznik, "https://www.spreaker.com/show/2621972/episodes/feed", true, false));
          _podcasts.Add(new Podcast(Podcast.PodcastType.KCW, "https://podkasty.info/RSS/klcw.rss", true, false));
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Panoptykon, "https://panoptykon.org/podcasty/rss.xml", true, false));
 
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
@@ -103,7 +104,11 @@ namespace RmfPodcastDownloader {
             podcast.Name = podcasts.channel.title;
             podcast.Path = path;
 
-            string coverFile = SaveCover(path, podcasts.channel.image1.href).Result;
+            string coverUrl = podcasts.channel.image1?.href;
+            if (string.IsNullOrWhiteSpace(coverUrl))
+               coverUrl = podcasts.channel.image?.url;
+
+            string coverFile = SaveCover(path, coverUrl).Result;
 
             int count = 0;
             int errorCount = 0;
@@ -235,7 +240,8 @@ namespace RmfPodcastDownloader {
             Unknown = 0,
             Rmf = 1,
             Niebezpiecznik = 2,
-            KCW = 3
+            KCW = 3,
+            Panoptykon = 4
          }
          public PodcastType Type { get; set; }
          public string Name { get; set; }
