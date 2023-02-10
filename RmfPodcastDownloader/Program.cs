@@ -34,7 +34,8 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/3318547/episodes/feed", true, false)); //Piąte nie zabijaj
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/6e6e1568/podcast/rss", true, false)); //Kryminalne historie
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/606807e4/podcast/rss", true, false)); //Olga Herring
-      
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.castos.com/d4vo5", true, false)); //Nauka To Lubię
+
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
             int index = i;
