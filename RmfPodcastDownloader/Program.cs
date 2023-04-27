@@ -111,7 +111,7 @@ namespace RmfPodcastDownloader {
             string coverUrl = podcasts.channel.image1?.href;
             if (string.IsNullOrWhiteSpace(coverUrl))
                coverUrl = podcasts.channel.image?.url;
-
+            
             string coverFile = SaveCover(path, coverUrl).Result;
 
             int count = 0;
@@ -174,18 +174,24 @@ namespace RmfPodcastDownloader {
       /// <param name="imageUrl">Url where covers is located</param>
       /// <returns></returns>
       private static async Task<string> SaveCover(string path, string imageUrl) {
-         string fileName = CleanFileName(Path.GetFileNameWithoutExtension(imageUrl.Split(new[] { '?' })[0])) + ".jpg";
-         string filePath = Path.Combine(path, fileName);
-         using (HttpResponseMessage response = await _client.GetAsync(imageUrl, HttpCompletionOption.ResponseHeadersRead))
-         using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
-            using (Image image = Image.Load(streamToReadFrom)) {
-               if (image.Width > 1000) {
-                  image.Mutate(x => x
-                       .Resize(1000, 0)
-                       );
-                  image.Save(filePath);
+         string filePath = string.Empty;
+         try {
+            string fileName = CleanFileName(Path.GetFileNameWithoutExtension(imageUrl.Split(new[] { '?' })[0])) + ".jpg";
+            filePath = Path.Combine(path, fileName);
+            using (HttpResponseMessage response = await _client.GetAsync(imageUrl, HttpCompletionOption.ResponseHeadersRead))
+            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync()) {
+               using (Image image = Image.Load(streamToReadFrom)) {
+                  if (image.Width > 1000) {
+                     image.Mutate(x => x
+                          .Resize(1000, 0)
+                          );
+                     image.Save(filePath);
+                  }
                }
             }
+         }
+         catch (Exception ex) {
+            _logger.Error(ex, "Error dwonloading cover filePath={0}, imageUrl={1}", filePath, imageUrl);
          }
          return filePath;
       }
