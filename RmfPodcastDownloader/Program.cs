@@ -36,6 +36,7 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/606807e4/podcast/rss", true, false)); //Olga Herring
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.castos.com/d4vo5", true, false)); //Nauka To Lubię
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/2ec7f2f8/podcast/rss", true, false)); //Zagadki Kryminalne - Karolina Anna
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2243", true, false)); //The Prosecutors
 
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
@@ -120,7 +121,7 @@ namespace RmfPodcastDownloader {
             for (int i = 0; i < podcasts.channel.item.Length; i++) {
                podcastItem = podcasts.channel.item[i];
                count++;
-               DateTime podcastDate = DateTime.Parse(podcastItem.pubDate);
+               DateTime podcastDate = DateTime.Parse(podcastItem.pubDate.Replace("PDT","").Replace("PST", "")); // I don't care about TimeZone. I just need Date
                string fileName = CleanFileName($"{podcastDate:yyyy-MM-dd} - {podcastItem.title?.Trim()}.mp3");
                string filePath = Path.Combine(path, fileName);
                if (File.Exists(filePath))
