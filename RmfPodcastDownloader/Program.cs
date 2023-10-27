@@ -38,6 +38,7 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/2ec7f2f8/podcast/rss", true, false)); //Zagadki Kryminalne - Karolina Anna
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2243", true, false)); //The Prosecutors
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/QCD6696793622", true, false)); //Big Mad True Crime
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/4215515/episodes/feed", true, false)); //PatoArchitekci
 
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
