@@ -45,7 +45,8 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "http://devtalk.pl/feed", true, false)); //DevTalk
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=1983", true, false)); //Court Junkie
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2292", true, false)); //Court Junkie CIVIL
-      
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://rss.art19.com/mrballens-medical-mysteries", true, false)); //MrBallen’s Medical Mysteries
+
 
          Task[] tasks = new Task[_podcasts.Count];
          for (int i = 0; i < _podcasts.Count; i++) {
