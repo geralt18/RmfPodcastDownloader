@@ -18,37 +18,37 @@ using static RmfPodcastDownloader.Program;
 namespace RmfPodcastDownloader {
     class Program {
         static async Task Main(string[] args) {
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml", true, true));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/dorwac-bestie.xml", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml", true, true));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/misja-specjalna.xml", true, true));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml", true, true));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/kryminatorium.xml", false, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Niebezpiecznik, "https://www.spreaker.com/show/2621972/episodes/feed", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.KCW, "https://podkasty.info/RSS/klcw.rss", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Panoptykon, "https://panoptykon.org/podcasty/rss.xml", true, false));
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/3318547/episodes/feed", true, false)); //Piąte nie zabijaj
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/6e6e1568/podcast/rss", true, false)); //Kryminalne historie
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/606807e4/podcast/rss", true, false)); //Olga Herring
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.castos.com/d4vo5", true, false)); //Nauka To Lubię
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/2ec7f2f8/podcast/rss", true, false)); //Zagadki Kryminalne - Karolina Anna
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2243", true, false)); //The Prosecutors
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/QCD6696793622", true, false)); //Big Mad True Crime
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/4215515/episodes/feed", true, false)); //PatoArchitekci
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://rss.art19.com/the-vanished-podcast-wondery", true, false)); //The Vanished
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://hanselminutes.com/subscribe", true, false)); //The Hanselminutes podcast
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.simplecast.com/XA_851k3", true, false)); //The Stack Overflow Podcast
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "http://devtalk.pl/feed", true, false)); //DevTalk
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=1983", true, false)); //Court Junkie
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2292", true, false)); //Court Junkie CIVIL
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://rss.art19.com/mrballens-medical-mysteries", true, false)); //MrBallen’s Medical Mysteries
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://pod.link/1482669176.rss", true, false)); //DUST
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.acast.com/public/shows/d1b39068-c10f-5817-8324-88ba173183cd", true, false)); //We're alive
-            //_podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/SBP4341397353", true, false)); //DERELICT
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml", true, true));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/dorwac-bestie.xml", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml", true, true));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/zakazana-historia-radia.xml", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/misja-specjalna.xml", true, true));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/bajki-dla-doroslych.xml", true, true));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/kryminatorium.xml", false, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/ostatnie-dni-legendy.xml", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/rockandrollowa-historia-swiata.xml", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf24.pl/podcast/naukowo-rzecz-ujmujac/feed", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Niebezpiecznik, "https://www.spreaker.com/show/2621972/episodes/feed", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.KCW, "https://podkasty.info/RSS/klcw.rss", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Panoptykon, "https://panoptykon.org/podcasty/rss.xml", true, false));
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/3318547/episodes/feed", true, false)); //Piąte nie zabijaj
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/6e6e1568/podcast/rss", true, false)); //Kryminalne historie
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/606807e4/podcast/rss", true, false)); //Olga Herring
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.castos.com/d4vo5", true, false)); //Nauka To Lubię
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/2ec7f2f8/podcast/rss", true, false)); //Zagadki Kryminalne - Karolina Anna
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2243", true, false)); //The Prosecutors
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/QCD6696793622", true, false)); //Big Mad True Crime
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.spreaker.com/show/4215515/episodes/feed", true, false)); //PatoArchitekci
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://rss.art19.com/the-vanished-podcast-wondery", true, false)); //The Vanished
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://hanselminutes.com/subscribe", true, false)); //The Hanselminutes podcast
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.simplecast.com/XA_851k3", true, false)); //The Stack Overflow Podcast
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "http://devtalk.pl/feed", true, false)); //DevTalk
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=1983", true, false)); //Court Junkie
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.podcastone.com/podcast?categoryID2=2292", true, false)); //Court Junkie CIVIL
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://rss.art19.com/mrballens-medical-mysteries", true, false)); //MrBallen’s Medical Mysteries
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://pod.link/1482669176.rss", true, false)); //DUST
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.acast.com/public/shows/d1b39068-c10f-5817-8324-88ba173183cd", true, false)); //We're alive
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/SBP4341397353", true, false)); //DERELICT
             _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/wolf359radio", true, false)); //Wolf 359
             _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/SBP5252339511", true, false)); //The Leviathan Chronicles
             _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.megaphone.fm/thestrata", true, false)); //The Strata
@@ -56,6 +56,9 @@ namespace RmfPodcastDownloader {
             _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://podcasts.files.bbci.co.uk/p0d34733.rss", true, false)); //BBC Restart
             _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://podcasts.files.bbci.co.uk/p06tqsg3.rss", true, false)); //BBC Forest 404
             _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://podcasts.files.bbci.co.uk/p09hbsqb.rss", true, false)); //BBC Limelight
+            _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feed.passengerlist.org/", true, false)); //Passenger List
+
+        
 
 
 
