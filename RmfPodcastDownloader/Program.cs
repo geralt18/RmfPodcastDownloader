@@ -59,6 +59,9 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feed.passengerlist.org/", true, false)); //Passenger List
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.buzzsprout.com/1850700.rss/", true, false)); //Mumbai Crime  
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://pod.link/blackout.rss/", true, false)); //Blackout  
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/c72d808/podcast/rss", true, false)); //Przeprogramowani
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.feedburner.com/PodcastOstrapila", true, false)); //Ostra piła
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.buzzsprout.com/103493.rss", true, false)); //Porozmawiajmy o IT
 
 
 
