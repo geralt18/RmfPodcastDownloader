@@ -62,6 +62,7 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/c72d808/podcast/rss", true, false)); //Przeprogramowani
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.feedburner.com/PodcastOstrapila", true, false)); //Ostra piła
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.buzzsprout.com/103493.rss", true, false)); //Porozmawiajmy o IT
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://zaufanatrzeciastrona.pl/post/category/podcast/feed/", true, false));  //Rozmowa Kontrolowana - zaufana 3 strona
 
 
 
