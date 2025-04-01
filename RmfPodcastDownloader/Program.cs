@@ -12,12 +12,16 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Microsoft.Extensions.Configuration;
 using static RmfPodcastDownloader.Program;
 
 
 namespace RmfPodcastDownloader {
    class Program {
       static async Task Main(string[] args) {
+         var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+         var appSettings = builder.GetSection("AppSettings").Get<AppSettings>();
+
          _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/historia-dla-doroslych.xml", true, true));
          _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/dorwac-bestie.xml", true, false));
          _podcasts.Add(new Podcast(Podcast.PodcastType.Rmf, "https://www.rmf.fm/rss/podcast/sceny-zbrodni.xml", true, true));
@@ -62,8 +66,11 @@ namespace RmfPodcastDownloader {
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://anchor.fm/s/c72d808/podcast/rss", true, false)); //Przeprogramowani
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://feeds.feedburner.com/PodcastOstrapila", true, false)); //Ostra piła
          _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://www.buzzsprout.com/103493.rss", true, false)); //Porozmawiajmy o IT
-         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://zaufanatrzeciastrona.pl/post/category/podcast/feed/", true, false));  //Rozmowa Kontrolowana - zaufana 3 strona
-
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, "https://zaufanatrzeciastrona.pl/post/category/podcast/feed/", true, false));         //Z3S - Rozmowa Kontrolowana
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, $"https://podcast.zaufanatrzeciastrona.pl/@kb/feed.xml?token={appSettings.Z3SToken}", true, false, "Z3S"));         //Z3S - Live Klubu Bezpiecznika
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, $"https://podcast.zaufanatrzeciastrona.pl/@studio/feed.xml?token={appSettings.Z3SToken}", true, false, "Z3S"));     //Z3S - Nagrania studyjne
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, $"https://podcast.zaufanatrzeciastrona.pl/@archiwum/feed.xml?token={appSettings.Z3SToken}", true, false, "Z3S"));   //Z3S - Archiwum występów
+         _podcasts.Add(new Podcast(Podcast.PodcastType.Unknown, $"https://podcast.zaufanatrzeciastrona.pl/@sa/feed.xml?token={appSettings.Z3SToken}", true, false, "Z3S"));         //Z3S - Kurs Security Awareness
 
 
          Task[] tasks = new Task[_podcasts.Count];
@@ -133,7 +140,13 @@ namespace RmfPodcastDownloader {
                podcasts = (rss)serializer.Deserialize(stringReader);
             }
 
-            string path = Path.Combine(_baseDir, CleanFileName(podcasts.channel.title));
+            string path = string.Empty;
+            if(string.IsNullOrWhiteSpace(podcast.Directory))
+               path = Path.Combine(_baseDir, CleanFileName(podcasts.channel.title));
+            else 
+               path = Path.Combine(Path.Combine(_baseDir, podcast.Directory), CleanFileName(podcasts.channel.title));
+
+
             if(!Directory.Exists(path))
                Directory.CreateDirectory(path);
 
@@ -269,12 +282,12 @@ namespace RmfPodcastDownloader {
       private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
       public class Podcast {
-         public Podcast(PodcastType type, string url, bool download, bool sync) {
+         public Podcast(PodcastType type, string url, bool download, bool sync, string directory = "") {
             Type = type;
             Url = url;
             Download = download;
             Sync = sync;
-
+            Directory = directory;
          }
          public enum PodcastType {
             Unknown = 0,
@@ -286,6 +299,7 @@ namespace RmfPodcastDownloader {
          public PodcastType Type { get; set; }
          public string Name { get; set; }
          public string Url { get; set; }
+         public string Directory { get; set; }
          public string Path { get; set; }
          public bool Download { get; set; }
          public bool Sync { get; set; }
